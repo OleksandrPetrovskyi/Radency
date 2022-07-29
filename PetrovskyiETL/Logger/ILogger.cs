@@ -9,10 +9,9 @@ namespace PetrovskyiETL.Logger
     internal interface ILogger
     {
         string PathToReadFiles { get; set; }
-        string PathToRecordingFiles { get; set; }
-
-        string Read(int lineNumber);
+        int LineNumber { get; set; }
+        string Read();
         void Log(string message);
-        void MetaLog();
+        void MetaLog(string message);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,10 +10,18 @@ namespace PetrovskyiETL.Logger
 {
     internal class FileLogger : ILogger
     {
-        public string PathToReadFiles { get; set; }
-        public string PathToRecordingFiles { get; set; }
+        private readonly string _outputFolder;
 
-        public string Read(int lineNumber)
+        public string PathToReadFiles { get; set; }
+        public int LineNumber { get; set; }
+
+        public FileLogger()
+        {
+            var folder = DateTime.Now.Date.ToShortDateString().ToString().Replace('/', '.');
+            _outputFolder = $@"{ConfigurationManager.AppSettings.Get("Results")}\{folder}";
+        }
+
+        public string Read()
         {
             if (PathToReadFiles == null)
                 return null;
@@ -21,7 +30,7 @@ namespace PetrovskyiETL.Logger
 
             try
             {
-                message = File.ReadLines(PathToReadFiles).Skip(lineNumber).First();
+                message = File.ReadLines(PathToReadFiles).Skip(LineNumber).First();
             }
             catch (Exception ex)
             {
@@ -33,12 +42,21 @@ namespace PetrovskyiETL.Logger
 
         public void Log(string message)
         {
-            throw new NotImplementedException();
+            if(!Directory.Exists($@"{_outputFolder}"))
+                Directory.CreateDirectory($@"{_outputFolder}");
+
+            using (var writer = new StreamWriter($@"{_outputFolder}\output.json", true))
+            {
+                writer.WriteLineAsync(message);
+            }
         }
 
-        public void MetaLog()
+        public void MetaLog(string message)
         {
-            throw new NotImplementedException();
+            using (var writer = new StreamWriter($@"{_outputFolder}\meta.log", true))
+            {
+                writer.WriteLineAsync(message);
+            }
         }
     }
 }

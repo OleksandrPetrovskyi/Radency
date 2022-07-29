@@ -1,5 +1,4 @@
-﻿using PetrovskyiETL.Check;
-using PetrovskyiETL.Logger;
+﻿using PetrovskyiETL.Logger;
 using PetrovskyiETL.Models;
 using System;
 using System.Collections.Generic;
@@ -12,37 +11,42 @@ namespace PetrovskyiETL
 {
     internal class Transformer
     {
-        private readonly ICheck _check;
         private readonly ILogger _logger;
         private readonly Regex CorrectNotation = new Regex(@"(?<firstName>\w+ ?\w+), ?(?<lastName>\w*), “(?<adress>\w+, \w+ \d+, \d)”,  (?<payment>\d+\.\d), (?<date>\d{4}-\d{2}-\d{2}), “?(?<account_number>\d{7})”?, (?<service>\w*)");
 
-        public Transformer(ICheck check, ILogger logger)
+        public Transformer(ILogger logger)
         {
-            _check = check;
             _logger = logger;
         }
 
-        public List<RecordingFormat> Transform(string path)
+        public (List<RecordingFormat> recordings, int parsedLines, int foundErrors) Transform(string path)
         {
-            if (path == null)
-                throw new Exception("Path is null.");
+            _logger.PathToReadFiles = path ?? throw new Exception("Path is null.");
 
-            var validLines = new List<RecordingFormat>();
-            var invalidLines = 0;
-            _logger.PathToReadFiles = path;
+            var recordings = new List<RecordingFormat>();
+            var parsedLines = 0;
+            var foundErrors = 0;
 
             for (int i = 0; ; i++)
             {
-                var line = _logger.Read(i);
+                _logger.LineNumber = i;
+                var line = _logger.Read();
 
-                if (line == null || line.Contains("Exception"))
+                if (line.Contains("Exception"))
                 {
                     break;
                 }
+
                 else if (CorrectNotation.IsMatch(line))
                 {
-                    var rowData = CorrectNotation.Matches(line);
-                    var row = rowData[0].Groups;
+                    parsedLines++;
+                    var row = CorrectNotation.Matches(line)[0].Groups;
+
+                    if(row["firstName"].Value.Length == 0 && row["lastName"].Value.Length == 0)
+                    {
+                        foundErrors++;
+                        continue;
+                    }
 
                     var name = $"{row["firstName"].Value} {row["lastName"].Value}";
                     var payer = new Payer
@@ -53,7 +57,7 @@ namespace PetrovskyiETL
                         AccountNumber = row["account_number"].Value
                     };
 
-                    validLines.Add(new RecordingFormat
+                    recordings.Add(new RecordingFormat
                     {
                         City = row["adress"].Value,
 
@@ -69,15 +73,16 @@ namespace PetrovskyiETL
 
                         Total = row["payment"].Value
                     });
-
                 }
+
                 else
                 {
-                    invalidLines++;
+                    parsedLines++;
+                    foundErrors++;
                 }
             }
 
-            return validLines;
+            return (recordings, parsedLines, foundErrors);
         }
     }
 }

@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json;
-using PetrovskyiETL.Check;
 using PetrovskyiETL.Logger;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -13,30 +14,55 @@ namespace PetrovskyiETL
     internal class Startup
     {
         private readonly ILogger _logger;
-        private readonly ICheck _check;
         private readonly Transformer _transformer;
-        public Startup(ILogger logger, ICheck check, Transformer transformer)
+        private readonly string _inputFolder;
+
+        public Startup(ILogger logger, Transformer transformer)
         {
             _logger = logger;
-            _check = check;
             _transformer = transformer;
+
+            _inputFolder = ConfigurationManager.AppSettings.Get("FolderWithFiles");
         }
 
         public void Run()
         {
-            while (true)
+            var parsedFiles = 0;
+            var invalidFiles = new List<string>();
+            var parsedLines = 0;
+            var foundErrors = 0;
+
+            var filesInFolder = Directory.EnumerateFiles($@"{_inputFolder}", "*", SearchOption.TopDirectoryOnly).ToArray();
+            var files = filesInFolder.Where(file => file.EndsWith(".csv") || file.EndsWith(".txt")).ToArray();
+            
+            parsedFiles += filesInFolder.Length;
+            invalidFiles = filesInFolder.Where(file => !file.EndsWith(".csv") && !file.EndsWith(".txt")).ToList();
+            
+            foreach (var file in files)
             {
-                var files = _check.FileSearch();
+                var result = _transformer.Transform(file);
 
-                var TTTTT = _transformer.Transform("C:\\Users\\Олександр\\Desktop\\Template\\New Text Document.txt");
+                if (result.parsedLines == 0)
+                    continue;
 
-                foreach (var t in TTTTT)
+                parsedLines += result.parsedLines;
+                foundErrors += result.foundErrors;
+
+                foreach (var t in result.recordings)
                 {
                     var serializedContent = JsonConvert.SerializeObject(t);
+                    _logger.Log(serializedContent);
                 }
-
-
             }
+            var outpt = $@"parsed_files: {parsedFiles}
+parsed_lines: {parsedLines}
+found_errors: {foundErrors}
+invalid_files: ";
+            foreach (var file in invalidFiles)
+            {
+                outpt += $"{file}{Environment.NewLine}";
+            }
+            _logger.MetaLog(outpt);
         }
     }
 }
