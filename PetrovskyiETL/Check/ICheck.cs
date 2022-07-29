@@ -11,6 +11,5 @@ namespace PetrovskyiETL.Check
     internal interface ICheck
     {
         List<string> FileSearch();
-        List<RecordingFormat> CheckFileLines(string path);
     }
 }

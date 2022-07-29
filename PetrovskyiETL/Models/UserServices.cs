@@ -9,7 +9,7 @@ namespace PetrovskyiETL.Models
     internal class UserServices
     {
         public string Name { get; set; }
-        public List<Payer> Payers { get; set; }
+        public List<Payer> Payers { get; set; } = new List<Payer>();
         public string Total { get; set; }
     }
 }

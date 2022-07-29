@@ -16,6 +16,7 @@ namespace PetrovskyiETL
             var service = new ServiceCollection()
             .AddSingleton<ILogger, FileLogger>()
             .AddSingleton<ICheck, EtlCheck>()
+            .AddSingleton<Transformer>()
             .AddSingleton<Startup>()
             .BuildServiceProvider();
 

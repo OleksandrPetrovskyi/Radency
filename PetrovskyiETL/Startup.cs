@@ -14,10 +14,12 @@ namespace PetrovskyiETL
     {
         private readonly ILogger _logger;
         private readonly ICheck _check;
-        public Startup(ILogger logger, ICheck check)
+        private readonly Transformer _transformer;
+        public Startup(ILogger logger, ICheck check, Transformer transformer)
         {
             _logger = logger;
             _check = check;
+            _transformer = transformer;
         }
 
         public void Run()
@@ -26,12 +28,10 @@ namespace PetrovskyiETL
             {
                 var files = _check.FileSearch();
 
-
-
-                var TTTTT = _check.CheckFileLines("C:\\Users\\Олександр\\Desktop\\Template\\New Text Document.txt");
+                var TTTTT = _transformer.Transform("C:\\Users\\Олександр\\Desktop\\Template\\New Text Document.txt");
                 foreach (var t in TTTTT)
                 {
-                    var serializedContent = JsonConvert.SerializeObject(TTTTT);
+                    var serializedContent = JsonConvert.SerializeObject(t);
                 }
             }
         }
