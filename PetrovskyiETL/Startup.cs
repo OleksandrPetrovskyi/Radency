@@ -29,10 +29,13 @@ namespace PetrovskyiETL
                 var files = _check.FileSearch();
 
                 var TTTTT = _transformer.Transform("C:\\Users\\Олександр\\Desktop\\Template\\New Text Document.txt");
+
                 foreach (var t in TTTTT)
                 {
                     var serializedContent = JsonConvert.SerializeObject(t);
                 }
+
+
             }
         }
     }
