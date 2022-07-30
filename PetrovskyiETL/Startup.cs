@@ -16,6 +16,7 @@ namespace PetrovskyiETL
         private readonly ILogger _logger;
         private readonly Transformer _transformer;
         private readonly string _inputFolder;
+        private readonly string _outputFolder;
 
         public Startup(ILogger logger, Transformer transformer)
         {
@@ -23,6 +24,9 @@ namespace PetrovskyiETL
             _transformer = transformer;
 
             _inputFolder = ConfigurationManager.AppSettings.Get("FolderWithFiles");
+
+            var folder = DateTime.Now.Date.ToShortDateString().ToString().Replace('/', '.');
+            _outputFolder = $@"{ConfigurationManager.AppSettings.Get("Results")}\{folder}";
         }
 
         public void Run()
@@ -57,11 +61,13 @@ namespace PetrovskyiETL
             var outpt = $@"parsed_files: {parsedFiles}
 parsed_lines: {parsedLines}
 found_errors: {foundErrors}
-invalid_files: ";
+invalid_files: [";
             foreach (var file in invalidFiles)
             {
-                outpt += $"{file}{Environment.NewLine}";
+                outpt += $"{file}, ";
             }
+            outpt = outpt.Remove(outpt.Length - 2);
+            outpt += ']';
             _logger.MetaLog(outpt);
         }
     }

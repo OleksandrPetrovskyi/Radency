@@ -23,13 +23,17 @@ namespace PetrovskyiETL
         {
             _logger.PathToReadFiles = path ?? throw new Exception("Path is null.");
 
+            var lineNumber = 0;
             var recordings = new List<RecordingFormat>();
             var parsedLines = 0;
             var foundErrors = 0;
+            
+            if (path.EndsWith(".csv"))
+                lineNumber = 1;
 
-            for (int i = 0; ; i++)
+            for (; ; lineNumber++)
             {
-                _logger.LineNumber = i;
+                _logger.LineNumber = lineNumber;
                 var line = _logger.Read();
 
                 if (line.Contains("Exception"))
