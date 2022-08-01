@@ -62,8 +62,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Logger\ConsoleLogger.cs" />
     <Compile Include="Logger\FileLogger.cs" />
-    <Compile Include="Logger\ILogger.cs" />
     <Compile Include="Models\Payer.cs" />
     <Compile Include="Models\UserServices.cs" />
     <Compile Include="Program.cs" />

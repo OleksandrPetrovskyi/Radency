@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace PetrovskyiETL.Logger
 {
-    internal class FileLogger : ILogger
+    internal class FileLogger
     {
         private readonly string _outputFolder;
-
+        public string errors = string.Empty;
         public string PathToReadFiles { get; set; }
         public int LineNumber { get; set; }
 
@@ -32,15 +32,20 @@ namespace PetrovskyiETL.Logger
             {
                 message = File.ReadLines(PathToReadFiles).Skip(LineNumber).First();
             }
+            catch(InvalidOperationException)
+            {
+                return null;
+            }
             catch (Exception ex)
             {
+                errors += $"{ex}{Environment.NewLine}";
                 return $"Exception: {ex}";
             }
 
             return message;
         }
 
-        public void Log(string message)
+        public void Record(string message)
         {
             if(!Directory.Exists($@"{_outputFolder}"))
                 Directory.CreateDirectory($@"{_outputFolder}");
@@ -51,7 +56,7 @@ namespace PetrovskyiETL.Logger
             }
         }
 
-        public void MetaLog(string message)
+        public void ImportantRecord(string message)
         {
             using (var writer = new StreamWriter($@"{_outputFolder}\meta.log", true))
             {

@@ -1,8 +1,0 @@
-{"City":"Lviv, Kleparivska 35, 4","Services":[{"Name":"John Doe","Payers":[{"Name":"John Doe","Payment":"500.0","Date":"2022-27-01","AccountNumber":"1234567"}],"Total":"500.0"}],"Total":"500.0"}
-{"City":"Lviv, Kleparivska 40, 1","Services":[{"Name":"Mike Wiksen","Payers":[{"Name":"Mike Wiksen","Payment":"720.0","Date":"2022-27-05","AccountNumber":"7654321"}],"Total":"720.0"}],"Total":"720.0"}
-{"City":"Lviv, Gorodotska 120, 3","Services":[{"Name":"Nick Potter","Payers":[{"Name":"Nick Potter","Payment":"880.0","Date":"2022-25-03","AccountNumber":"3334444"}],"Total":"880.0"}],"Total":"880.0"}
-{"City":"Lviv, Gorodotska 120, 5","Services":[{"Name":"Luke Pan ","Payers":[{"Name":"Luke Pan ","Payment":"40.0","Date":"2022-12-07","AccountNumber":"2222111"}],"Total":"40.0"}],"Total":"40.0"}
-{"City":"Lviv, Kleparivska 35, 4","Services":[{"Name":"John Doe","Payers":[{"Name":"John Doe","Payment":"500.0","Date":"2022-27-01","AccountNumber":"1234567"}],"Total":"500.0"}],"Total":"500.0"}
-{"City":"Lviv, Kleparivska 40, 1","Services":[{"Name":"Mike Wiksen","Payers":[{"Name":"Mike Wiksen","Payment":"720.0","Date":"2022-27-05","AccountNumber":"7654321"}],"Total":"720.0"}],"Total":"720.0"}
-{"City":"Lviv, Gorodotska 120, 3","Services":[{"Name":"Nick Potter","Payers":[{"Name":"Nick Potter","Payment":"880.0","Date":"2022-25-03","AccountNumber":"3334444"}],"Total":"880.0"}],"Total":"880.0"}
-{"City":"Lviv, Gorodotska 120, 5","Services":[{"Name":"Luke Pan ","Payers":[{"Name":"Luke Pan ","Payment":"40.0","Date":"2022-12-07","AccountNumber":"2222111"}],"Total":"40.0"}],"Total":"40.0"}

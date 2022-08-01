@@ -1,10 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using PetrovskyiETL.Logger;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PetrovskyiETL
 {
@@ -13,9 +8,10 @@ namespace PetrovskyiETL
         static void Main(string[] args)
         {
             var service = new ServiceCollection()
-            .AddSingleton<ILogger, FileLogger>()
+            .AddSingleton<FileLogger>()
             .AddSingleton<Transformer>()
             .AddSingleton<Startup>()
+            .AddSingleton<ConsoleLogger>()
             .BuildServiceProvider();
 
             service.GetRequiredService<Startup>().Run();

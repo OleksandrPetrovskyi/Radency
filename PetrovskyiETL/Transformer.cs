@@ -11,17 +11,18 @@ namespace PetrovskyiETL
 {
     internal class Transformer
     {
-        private readonly ILogger _logger;
+        private readonly FileLogger _fileLogger;
         private readonly Regex CorrectNotation = new Regex(@"(?<firstName>\w+ ?\w+), ?(?<lastName>\w*), “(?<adress>\w+, \w+ \d+, \d)”,  (?<payment>\d+\.\d), (?<date>\d{4}-\d{2}-\d{2}), “?(?<account_number>\d{7})”?, (?<service>\w*)");
 
-        public Transformer(ILogger logger)
+        public string errors = string.Empty;
+        public Transformer(FileLogger fileLogger)
         {
-            _logger = logger;
+            _fileLogger = fileLogger;
         }
 
         public (List<RecordingFormat> recordings, int parsedLines, int foundErrors) Transform(string path)
         {
-            _logger.PathToReadFiles = path ?? throw new Exception("Path is null.");
+            _fileLogger.PathToReadFiles = path ?? throw new Exception("Path is null.");
 
             var lineNumber = 0;
             var recordings = new List<RecordingFormat>();
@@ -31,12 +32,12 @@ namespace PetrovskyiETL
             if (path.EndsWith(".csv"))
                 lineNumber = 1;
 
-            for (; ; lineNumber++)
+            for(; ; lineNumber++ )
             {
-                _logger.LineNumber = lineNumber;
-                var line = _logger.Read();
+                _fileLogger.LineNumber = lineNumber;
+                var line = _fileLogger.Read();
 
-                if (line.Contains("Exception"))
+                if (line == null)
                 {
                     break;
                 }
@@ -81,6 +82,7 @@ namespace PetrovskyiETL
 
                 else
                 {
+                    errors += $"Invalid record in {path} on line {lineNumber}.";
                     parsedLines++;
                     foundErrors++;
                 }
