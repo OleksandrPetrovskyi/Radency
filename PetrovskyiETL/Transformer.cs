@@ -11,10 +11,10 @@ namespace PetrovskyiETL
 {
     internal class Transformer
     {
-        private readonly FileLogger _fileLogger;
-        private readonly Regex CorrectNotation = new Regex(@"(?<firstName>\w+ ?\w+), ?(?<lastName>\w*), “(?<adress>\w+, \w+ \d+, \d)”,  (?<payment>\d+\.\d), (?<date>\d{4}-\d{2}-\d{2}), “?(?<account_number>\d{7})”?, (?<service>\w*)");
-
         public string errors = string.Empty;
+        private readonly FileLogger _fileLogger;
+        private readonly Regex CorrectNotation = new Regex(@"(?<firstName>\w+), *?(?<lastName>\w+), *“(?<adress>\w+, \w+ \d+, \d)”,  *(?<payment>\d+\.\d), *(?<date>\d{4}-\d{2}-\d{2}), *“?(?<account_number>\d{7})”?, *(?<service>\w*)");
+
         public Transformer(FileLogger fileLogger)
         {
             _fileLogger = fileLogger;
@@ -82,7 +82,7 @@ namespace PetrovskyiETL
 
                 else
                 {
-                    errors += $"Invalid record in {path} on line {lineNumber}.";
+                    errors += $"Invalid record in {path} on line {lineNumber}.{Environment.NewLine}";
                     parsedLines++;
                     foundErrors++;
                 }

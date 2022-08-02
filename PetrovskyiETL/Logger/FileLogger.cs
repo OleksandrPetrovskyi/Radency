@@ -17,8 +17,7 @@ namespace PetrovskyiETL.Logger
 
         public FileLogger()
         {
-            var folder = DateTime.Now.Date.ToShortDateString().ToString().Replace('/', '.');
-            _outputFolder = $@"{ConfigurationManager.AppSettings.Get("Results")}\{folder}";
+            _outputFolder = ConfigurationManager.AppSettings.Get("Results");
         }
 
         public string Read()
@@ -50,7 +49,9 @@ namespace PetrovskyiETL.Logger
             if(!Directory.Exists($@"{_outputFolder}"))
                 Directory.CreateDirectory($@"{_outputFolder}");
 
-            using (var writer = new StreamWriter($@"{_outputFolder}\output.json", true))
+            var folder = DateTime.Now.Date.ToShortDateString().ToString().Replace('/', '.');
+
+            using (var writer = new StreamWriter($@"{_outputFolder}\{folder}\output.json", true))
             {
                 writer.WriteLineAsync(message);
             }
@@ -58,7 +59,9 @@ namespace PetrovskyiETL.Logger
 
         public void ImportantRecord(string message)
         {
-            using (var writer = new StreamWriter($@"{_outputFolder}\meta.log", true))
+            var folder = DateTime.Now.Date.ToShortDateString().ToString().Replace('/', '.');
+
+            using (var writer = new StreamWriter($@"{_outputFolder}{folder}\meta.log", true))
             {
                 writer.WriteLineAsync(message);
             }

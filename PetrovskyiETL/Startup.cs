@@ -13,10 +13,11 @@ namespace PetrovskyiETL
 {
     internal class Startup
     {
-        private readonly ManualResetEvent _event = new ManualResetEvent(true);
+        private readonly ManualResetEvent _mutexForEtl = new ManualResetEvent(true);
         private readonly FileLogger _fileLogger;
         private readonly ConsoleLogger _consoleLogger;
         private readonly Transformer _transformer;
+
         private readonly string _inputFolder;
         private string errors = string.Empty;
         private int _working;
@@ -49,7 +50,8 @@ namespace PetrovskyiETL
             {
                 _consoleLogger.DisplayMessage(@"Press 1 to pause ETL.
 Press 2 to resume ETL.
-Press 3 to restart ETL.");
+Press 3 to restart ETL.
+Press any key to continue.");
                 int.TryParse(_consoleLogger.InputMessage(), out _working);
 
                 if(EtlThread.ThreadState == ThreadState.Stopped)
@@ -57,20 +59,20 @@ Press 3 to restart ETL.");
 
                 else if (_working == 1)
                 {
-                    _event.Reset();
+                    _mutexForEtl.Reset();
                     _consoleLogger.DisplayMessage("ETL suspended.");
                 }
 
                 else if (_working == 2)
                 {
-                    _event.Set();
+                    _mutexForEtl.Set();
                     _consoleLogger.DisplayMessage("ETL resumed.");
                 }
 
                 else if (_working == 3)
                 {
                     _parsedFiles = 0;
-                    _invalidFiles = new List<string>();
+                    _invalidFiles.Clear();
                     _parsedLines = 0;
                     _foundErrors = 0;
 
@@ -80,11 +82,13 @@ Press 3 to restart ETL.");
                 }
             }
 
-            errors += _fileLogger.errors;
+            errors += _fileLogger.errors + _transformer.errors;
+            
             if (errors.Length > 0)
                 _consoleLogger.DisplayMessage(errors);
             else
                 _consoleLogger.DisplayMessage("There were no runtime errors.");
+            _consoleLogger.InputMessage();
         }
 
         private void Etl()
@@ -97,7 +101,7 @@ Press 3 to restart ETL.");
 
             foreach (var file in files)
             {
-                _event.WaitOne();
+                _mutexForEtl.WaitOne();
                 var result = _transformer.Transform(file);
 
                 if (result.recordings.Count > 0)
@@ -133,6 +137,5 @@ invalid_files: [";
                 }
             }
         }
-
     }
 }
